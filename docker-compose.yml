@@ -5,7 +5,43 @@ services:
     build:
       context: ./backend
     ports:
+      - "5000:5000"version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
       - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      # Add any other environment variables your backend needs
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:5000  # Use the service name for communication
+    depends_on:
+      - backend
+
+  jenkins:
+    image: custom-jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins
+
+networks:
+  jenkins:
+
+volumes:
+  jenkins_home:
     environment:
       - NODE_ENV=production
       # Add any other environment variables your backend needs
