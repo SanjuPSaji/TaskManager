@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     dir('backend') {
-                        sh 'docker build -t ${DOCKER_IMAGE}:backend-latest .'
+                        bat 'docker build -t %DOCKER_IMAGE%:backend-latest .'
                     }
                 }
             }
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     dir('frontend') {
-                        sh 'docker build -t ${DOCKER_IMAGE}:frontend-latest .'
+                        bat 'docker build -t %DOCKER_IMAGE%:frontend-latest .'
                     }
                 }
             }
@@ -37,7 +37,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.test.yml up --abort-on-container-exit'
+                    bat 'docker-compose -f docker-compose.test.yml up --abort-on-container-exit'
                 }
             }
         }
@@ -46,8 +46,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        sh 'docker push ${DOCKER_IMAGE}:backend-latest'
-                        sh 'docker push ${DOCKER_IMAGE}:frontend-latest'
+                        bat 'docker push %DOCKER_IMAGE%:backend-latest'
+                        bat 'docker push %DOCKER_IMAGE%:frontend-latest'
                     }
                 }
             }
@@ -56,8 +56,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    bat 'docker-compose down'
+                    bat 'docker-compose up -d'
                 }
             }
         }
