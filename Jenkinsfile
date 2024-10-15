@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/SanjuPSaji/TaskManager'
+                // Specify the branch if needed
+                git branch: 'main', url: 'https://github.com/SanjuPSaji/TaskManager'
             }
         }
 
@@ -17,7 +18,7 @@ pipeline {
             steps {
                 script {
                     dir('backend') {
-                        sh 'docker build -t backend-image .'
+                        sh 'docker build -t ${DOCKER_IMAGE}:backend-latest .'
                     }
                 }
             }
@@ -27,7 +28,7 @@ pipeline {
             steps {
                 script {
                     dir('frontend') {
-                        sh 'docker build -t frontend-image .'
+                        sh 'docker build -t ${DOCKER_IMAGE}:frontend-latest .'
                     }
                 }
             }
@@ -44,12 +45,9 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('', 'dockerhub-credentials') {
-                        sh 'docker tag backend-image:latest $DOCKER_IMAGE:backend-latest'
-                        sh 'docker push $DOCKER_IMAGE:backend-latest'
-
-                        sh 'docker tag frontend-image:latest $DOCKER_IMAGE:frontend-latest'
-                        sh 'docker push $DOCKER_IMAGE:frontend-latest'
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        sh 'docker push ${DOCKER_IMAGE}:backend-latest'
+                        sh 'docker push ${DOCKER_IMAGE}:frontend-latest'
                     }
                 }
             }
