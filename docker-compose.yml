@@ -19,18 +19,6 @@ services:
     depends_on:
       - backend
 
-  jenkins:
-    image: custom-jenkins-with-docker
-    user: root
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - //./pipe/docker_engine://./var/run/docker.sock
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
-
 networks:
   jenkins:
 

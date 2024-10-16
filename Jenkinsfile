@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     dir('backend') {
-                        bat 'docker build -t ${DOCKER_IMAGE}:backend-latest .'
+                        sh 'docker build -t ${DOCKER_IMAGE}:backend-latest .'
                     }
                 }
             }
@@ -28,107 +28,49 @@ pipeline {
             steps {
                 script {
                     dir('frontend') {
-                        bat 'docker build -t ${DOCKER_IMAGE}:frontend-latest .'
+                        sh 'docker build -t ${DOCKER_IMAGE}:frontend-latest .'
                     }
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Image') {
             steps {
                 script {
-                    bat 'docker-compose -f docker-compose.test.yml up --abort-on-container-exit'
+                    sh 'docker run -d -p 3000:3000 ${DOCKER_IMAGE}:frontend-latest'
+                    // Capturing the container ID for later use
+                    script {
+                        CONTAINER_ID = sh(script: 'docker ps -q -f ancestor=${DOCKER_IMAGE}:frontend-latest', returnStdout: true).trim()
+                    }
                 }
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Docker Stop') {
+            steps {
+                script {
+                    sh "docker stop ${CONTAINER_ID}"
+                }
+            }
+        }
+
+        stage('Docker Login') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        bat 'docker push ${DOCKER_IMAGE}:backend-latest'
-                        bat 'docker push ${DOCKER_IMAGE}:frontend-latest'
+                        echo 'Logged in to Docker Hub'
                     }
                 }
             }
         }
 
-        stage('Deploy') {
-            steps {
-                script {
-                    bat 'docker-compose down'
-                    bat 'docker-compose up -d'
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            cleanWs()
-        }
-    }
-}
-pipeline {
-    agent any
-
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Add your DockerHub credentials in Jenkins
-        DOCKER_IMAGE = "sanjupsaji/taskmanager"
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Specify the branch if needed
-                git branch: 'main', url: 'https://github.com/SanjuPSaji/TaskManager'
-            }
-        }
-
-        stage('Build Backend') {
-            steps {
-                script {
-                    dir('backend') {
-                        bat 'docker build -t ${DOCKER_IMAGE}:backend-latest .'
-                    }
-                }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                script {
-                    dir('frontend') {
-                        bat 'docker build -t ${DOCKER_IMAGE}:frontend-latest .'
-                    }
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    bat 'docker-compose -f docker-compose.test.yml up --abort-on-container-exit'
-                }
-            }
-        }
-
-        stage('Push to DockerHub') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        bat 'docker push ${DOCKER_IMAGE}:backend-latest'
-                        bat 'docker push ${DOCKER_IMAGE}:frontend-latest'
+                        sh 'docker push ${DOCKER_IMAGE}:backend-latest'
+                        sh 'docker push ${DOCKER_IMAGE}:frontend-latest'
                     }
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    bat 'docker-compose down'
-                    bat 'docker-compose up -d'
                 }
             }
         }
