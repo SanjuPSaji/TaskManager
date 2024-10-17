@@ -35,6 +35,9 @@ function App() {
             setTasks(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error.response ? error.response.data : error.message);
+            // If there's an error fetching tasks, clear the token and show the login screen
+            localStorage.removeItem('token');
+            setToken('');
         }
     };
 
