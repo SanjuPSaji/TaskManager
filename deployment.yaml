@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: sanjupsaji/taskmanager:backend-__IMAGE_TAG__
+        image: sanjupsaji/taskmanager:backend-latest  # Use the appropriate tag here
         ports:
         - containerPort: 5000
 
@@ -35,6 +35,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: sanjupsaji/taskmanager:frontend-__IMAGE_TAG__
+        image: sanjupsaji/taskmanager:frontend-latest  # Use the appropriate tag here
         ports:
         - containerPort: 3000
