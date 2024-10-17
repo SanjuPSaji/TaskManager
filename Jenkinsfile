@@ -17,6 +17,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/SanjuPSaji/TaskManager'
                 script {
                     COMMIT_HASH = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "Commit Hash: ${COMMIT_HASH}"  // Output the commit hash for verification
                 }
             }
         }
@@ -49,12 +50,16 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    // Build both backend and frontend images
+                    // Build both backend and frontend images with unique commit hash
                     dir('backend') {
-                        sh 'docker build --no-cache -t ${DOCKER_IMAGE}:backend-${COMMIT_HASH} .'
+                        // Debugging output to verify the command
+                        echo "Building backend image with tag: ${DOCKER_IMAGE}:backend-latest"
+                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:backend-latest ."  // Use double quotes
                     }
                     dir('frontend') {
-                        sh 'docker build --no-cache -t ${DOCKER_IMAGE}:frontend-${COMMIT_HASH} .'
+                        // Debugging output to verify the command
+                        echo "Building frontend image with tag: ${DOCKER_IMAGE}:frontend-latest"
+                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:frontend-latest ."  // Use double quotes
                     }
                 }
             }
@@ -74,8 +79,10 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        sh 'docker push ${DOCKER_IMAGE}:backend-${COMMIT_HASH}'
-                        sh 'docker push ${DOCKER_IMAGE}:frontend-${COMMIT_HASH}'
+                        echo "Commit Hash: ${COMMIT_HASH}" 
+                        // Push the images with the unique commit hash as the tag
+                        sh "docker push ${DOCKER_IMAGE}:backend-latest"
+                        sh "docker push ${DOCKER_IMAGE}:frontend-latest"
                     }
                 }
             }
@@ -114,9 +121,11 @@ pipeline {
                     
                     // Replace the placeholder __IMAGE_TAG__ in deployment.yaml with the actual Docker image tags
                     sh """
-                    sed -i 's|__IMAGE_TAG__|${COMMIT_HASH}|g' deployment.yaml
+                    sed -i 's|__IMAGE_TAG__|frontend-latest|g' deployment.yaml
                     """
-                    
+                    sh ''' 
+                    cat deployment.yaml
+                    '''
                     // Apply the updated Kubernetes deployment and service YAML files
                     sh '''
                     kubectl apply -f deployment.yaml
