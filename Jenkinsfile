@@ -9,6 +9,7 @@ pipeline {
         AZURE_CREDENTIALS_ID = 'azure-credentials'
         RESOURCE_GROUP = "Jenkins-server_group"
         AKS_CLUSTER_NAME = "taskmanageraks"
+        VERCEL_TOKEN = credentials('vercel-token')
     }
 
     stages {
@@ -52,14 +53,12 @@ pipeline {
                 script {
                     // Build both backend and frontend images with unique commit hash
                     dir('backend') {
-                        // Debugging output to verify the command
                         echo "Building backend image with tag: ${DOCKER_IMAGE}:backend-latest"
-                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:backend-latest ."  // Use double quotes
+                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:backend-latest ."  
                     }
                     dir('frontend') {
-                        // Debugging output to verify the command
                         echo "Building frontend image with tag: ${DOCKER_IMAGE}:frontend-latest"
-                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:frontend-latest ."  // Use double quotes
+                        sh "docker build --no-cache -t ${DOCKER_IMAGE}:frontend-latest ."  
                     }
                 }
             }
@@ -80,7 +79,6 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
                         echo "Commit Hash: ${COMMIT_HASH}" 
-                        // Push the images with the unique commit hash as the tag
                         sh "docker push ${DOCKER_IMAGE}:backend-latest"
                         sh "docker push ${DOCKER_IMAGE}:frontend-latest"
                     }
@@ -106,7 +104,6 @@ pipeline {
         stage('Get AKS Credentials') {
             steps {
                 script {
-                    // Get AKS credentials and set the context
                     sh '''
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME --overwrite-existing
                     '''
@@ -118,15 +115,12 @@ pipeline {
             steps {
                 script {
                     echo "Deploying Docker images to AKS"
-                    
-                    // Replace the placeholder __IMAGE_TAG__ in deployment.yaml with the actual Docker image tags
                     sh """
                     sed -i 's|frontend-latest|${DOCKER_IMAGE}:frontend-latest|g' deployment.yaml
                     """
                     sh ''' 
                     cat deployment.yaml
                     '''
-                    // Apply the updated Kubernetes deployment and service YAML files
                     sh '''
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
@@ -135,6 +129,23 @@ pipeline {
                 }
             }
         }
+
+        New Stage for Deploying to Vercel
+        stage('Deploy to Vercel') {
+            steps {
+                script {
+                    echo "Triggering Vercel Deployment"
+                    sh """
+                    curl -X POST ${VERCEL_TOKEN}
+                    """
+                }
+            }
+        }
+        
+
+        
+        
+        
     }
 
     post {
