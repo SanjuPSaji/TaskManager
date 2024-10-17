@@ -9,6 +9,7 @@ function App() {
     const [password, setPassword] = useState('');
     const [token, setToken] = useState('');
     const [isLogin, setIsLogin] = useState(true);
+    const API_BASE_URL = "https://taskbackend-3ppk.onrender.com";
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token'); // Check for token in localStorage
@@ -30,7 +31,7 @@ function App() {
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get(`https://taskbackend-3ppk.onrender.com/api/tasks`, {
+            const response = await axios.get(`${API_BASE_URL}/api/tasks`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -44,7 +45,7 @@ function App() {
 
     const addTask = async () => {
         if (task) {
-            const response = await axios.post(`https://taskbackend-3ppk.onrender.com/api/tasks`, { name: task }, {
+            const response = await axios.post(`${API_BASE_URL}/api/tasks`, { name: task }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -59,7 +60,7 @@ function App() {
             console.error('Task ID is undefined');
             return;
         }
-        await axios.delete(`https://taskbackend-3ppk.onrender.com/api/tasks/${id}`, {
+        await axios.delete(`${API_BASE_URL}/api/tasks/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -69,7 +70,7 @@ function App() {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post(`https://taskbackend-3ppk.onrender.com/api/login`, { username, password });
+            const response = await axios.post(`${API_BASE_URL}/api/login`, { username, password });
             localStorage.setItem('token', response.data.token); // Store token in localStorage
             setToken(response.data.token); // Set token in state
             setUsername('');
@@ -81,7 +82,7 @@ function App() {
 
     const handleRegister = async () => {
         try {
-            await axios.post(`https://taskbackend-3ppk.onrender.com/api/register`, { username, password });
+            await axios.post(`${API_BASE_URL}/api/register`, { username, password });
             alert('Registration successful. Please log in.');
         } catch (error) {
             console.error('Registration failed:', error);

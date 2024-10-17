@@ -114,7 +114,7 @@ pipeline {
                     
                     // Replace the placeholder __IMAGE_TAG__ in deployment.yaml with the actual Docker image tags
                     sh """
-                    sed -i 's|__IMAGE_TAG__|${COMMIT_HASH}|g' deployment.yaml
+                    sed -i 's|__IMAGE_TAG__|frontend-${COMMIT_HASH}|g' deployment.yaml
                     """
                     
                     // Apply the updated Kubernetes deployment and service YAML files

@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: sanjupsaji/taskmanager:frontend-latest
+        image: sanjupsaji/taskmanager:frontend-__IMAGE_TAG__  # Placeholder for the commit hash
         ports:
         - containerPort: 3000
         env:
@@ -23,7 +22,6 @@ spec:
           value: "https://taskbackend-3ppk.onrender.com"
 
 ---
-
 
 apiVersion: v1
 kind: Service
