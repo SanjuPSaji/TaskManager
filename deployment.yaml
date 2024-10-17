@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,10 +20,7 @@ spec:
         env:
         - name: REACT_APP_BACKEND_URL
           value: "https://taskbackend-3ppk.onrender.com"
-
 ---
-
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -34,5 +30,5 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 80
-      targetPort: 3000
+  - port: 80
+    targetPort: 3000

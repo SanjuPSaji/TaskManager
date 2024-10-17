@@ -121,7 +121,7 @@ pipeline {
                     
                     // Replace the placeholder __IMAGE_TAG__ in deployment.yaml with the actual Docker image tags
                     sh """
-                    sed -i 's|__IMAGE_TAG__|frontend-latest|g' deployment.yaml
+                    sed -i 's|frontend-latest|${DOCKER_IMAGE}:frontend-latest|g' deployment.yaml
                     """
                     sh ''' 
                     cat deployment.yaml
