@@ -130,7 +130,7 @@ pipeline {
             }
         }
 
-        New Stage for Deploying to Vercel
+        
         stage('Deploy to Vercel') {
             steps {
                 script {
