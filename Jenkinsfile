@@ -34,13 +34,27 @@ pipeline {
             }
         }
 
-        stage('Run Image') {
+        stage('Run Backend Image') {
             steps {
                 script {
-                    sh 'docker run -d -p 3000:3000 ${DOCKER_IMAGE}:frontend-latest'
-                    // Capturing the container ID for later use
+                    // Run the backend container
+                    sh 'docker run -d -p 4000:4000 ${DOCKER_IMAGE}:backend-latest'
+                    // Capturing the backend container ID for later use
                     script {
-                        CONTAINER_ID = sh(script: 'docker ps -q -f ancestor=${DOCKER_IMAGE}:frontend-latest', returnStdout: true).trim()
+                        BACKEND_CONTAINER_ID = sh(script: 'docker ps -q -f ancestor=${DOCKER_IMAGE}:backend-latest', returnStdout: true).trim()
+                    }
+                }
+            }
+        }
+
+        stage('Run Frontend Image') {
+            steps {
+                script {
+                    // Run the frontend container
+                    sh 'docker run -d -p 3000:3000 ${DOCKER_IMAGE}:frontend-latest'
+                    // Capturing the frontend container ID for later use
+                    script {
+                        FRONTEND_CONTAINER_ID = sh(script: 'docker ps -q -f ancestor=${DOCKER_IMAGE}:frontend-latest', returnStdout: true).trim()
                     }
                 }
             }
@@ -49,7 +63,10 @@ pipeline {
         stage('Docker Stop') {
             steps {
                 script {
-                    sh "docker stop ${CONTAINER_ID}"
+                    // Stop the backend container
+                    sh "docker stop ${BACKEND_CONTAINER_ID}"
+                    // Stop the frontend container
+                    sh "docker stop ${FRONTEND_CONTAINER_ID}"
                 }
             }
         }
@@ -58,7 +75,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        echo 'Logged in to Docker Hub'
+                        sh 'echo "Logged in to Docker Hub"'
                     }
                 }
             }
