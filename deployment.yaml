@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: sanjupsaji/taskmanager:backend-latest  # Use the appropriate tag here
+        image: sanjupsaji/taskmanager:backend-latest
         ports:
         - containerPort: 5000
 
@@ -36,12 +36,12 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: sanjupsaji/taskmanager:frontend-latest  # Use the appropriate tag here
+        image: sanjupsaji/taskmanager:frontend-latest
         ports:
         - containerPort: 3000
-        env:  # Set environment variables here
+        env:
         - name: REACT_APP_BACKEND_URL
-          value: "http://backend-service:5000"  # Replace with your backend service name
+          value: "http://backend-service:5000"
 
 ---
 
@@ -50,7 +50,7 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: LoadBalancer  # Change from ClusterIP to LoadBalancer
+  type: LoadBalancer
   selector:
     app: backend
   ports:
