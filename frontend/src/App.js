@@ -108,11 +108,9 @@ function App() {
                         alt="Task Manager Logo"
                         className="logo"
                     />
-<<<<<<< HEAD
+
                     <h1 className="title">Task Manager Application</h1>
-=======
-                    <h1 className="title">Task Manager App</h1>
->>>>>>> 7116abec77011789f07d73ba0059e05247c1e500
+
                 </div>
                 {token && (
                     <button onClick={handleLogout} className="logout-button">Logout</button>
