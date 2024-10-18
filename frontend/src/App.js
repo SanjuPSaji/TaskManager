@@ -108,7 +108,11 @@ function App() {
                         alt="Task Manager Logo"
                         className="logo"
                     />
+<<<<<<< HEAD
                     <h1 className="title">Task Manager Application</h1>
+=======
+                    <h1 className="title">Task Manager App</h1>
+>>>>>>> 7116abec77011789f07d73ba0059e05247c1e500
                 </div>
                 {token && (
                     <button onClick={handleLogout} className="logout-button">Logout</button>
@@ -163,11 +167,11 @@ function App() {
                     <div>
                         <div className="introimg">
                             <p className="intro">
-                                Welcome to the Task Manager app! This application allows you to
+                                Hi! Welcome to the Task Manager app! This application allows you to
                                 easily manage your tasks. You can add new tasks, view all your
                                 tasks, and delete tasks when they are no longer needed. Stay
                                 organized and enhance your productivity with this simple yet
-                                effective tool.
+                                effective tool. 
                             </p>
                             <img
                                 className="introimage"
